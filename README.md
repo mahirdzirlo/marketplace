@@ -1,6 +1,6 @@
 # Install
 
-create .env file according to ENV_TEMPLATE
+create /server/.env file according to /server/ENV_TEMPLATE
 
 npm install
 npm run build
