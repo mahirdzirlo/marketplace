@@ -1,70 +1,111 @@
-# Getting Started with Create React App
+# Install
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+create .env file according to ENV_TEMPLATE
 
-## Available Scripts
+npm install
+npm run build
+npm run start
 
-In the project directory, you can run:
+**Task: Develop a 2-way marketplace that allows sellers to put items and buyers to buy the items.**
 
-### `npm start`
+**Prerequisites:**
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. Multiple stakeholders in the system: Buyer, Seller, Approver.
+2. They would have different roles and permissions.
+3. The Approver is responsible for approving the listings and gets notified when a new listing arrives.
+4. Sellers can put new listings.
+5. Buyers can see the products and place orders.
+6. Sellers can look at the orders and approve those orders.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Your task is to develop the marketplace by doing the requirement analysis and implementing the solution. Be creative.
 
-### `npm test`
+### **Backend Tasks**
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. **User Authentication and Authorization**
+   - Must Have: Implement a basic authentication and authorization system using JWT (JSON Web Tokens).
+   - **(Optional):** Implement multi-factor authentication (MFA).
+2. **CRUD API for Product Management**
+   - Develop an API that supports product listing creation, reading, updating, and deletion (CRUD operations). Ensure role-based access control (RBAC) for different user roles.
+   - **(Optional):** Add validation and error handling for edge cases.
+3. **Data Modeling and Integrity**
+   - Design a relational database schema for managing products, orders, and user roles.
+   - **Bonus:** Implement foreign key constraints and indexes to ensure performance and integrity.
+4. **Caching (Optional but Recommended)**
+   - Use caching for frequently accessed data like product listings or user sessions to optimize performance.
+   - **(Must Have):** Implement a basic caching layer (e.g., using Redis or Memcached) to store product data for quicker retrieval.
+   - **Bonus:** Implement cache invalidation for scenarios like product updates or deletions.
+5. **Messaging Queue (Optional but Recommended)**
+   - Set up a messaging queue (e.g., RabbitMQ, AWS SQS) for handling event-driven processes.
+   - **(Must Have):** Use a message queue to handle notifications (e.g., notifying the approver when a new product is listed).
+   - **Bonus:** Implement message retries and error handling for failed messages.
 
-### `npm run build`
+### **Frontend Tasks**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. **User Interface for Product Management**
+   - Build a responsive web application where sellers can view, add, edit, and delete products. Use React to create the interface.
+   - **(Optional):** Implement pagination for large datasets.
+2. **Dashboard (Optional)**
+   - Create a dashboard that displays order and product statistics using graphs and charts. Include a filtering option to view the data for different time periods.
+   - Implement dynamic components for real-time updates.
+3. **Frontend-Backend Integration**
+   - Integrate the frontend application with the backend API for product and order management. Ensure proper error handling and feedback for the user interface.
+   - **(Optional):** Implement loading spinners or skeleton screens to improve the user experience during API calls.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### **DevOps**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. **Version Control**
+   - Use Github for version control and tracking features.
+2. **CI/CD Pipeline Setup**
+   - **(Optional):** Set up a basic CI/CD pipeline using GitHub Actions or any other CI tool. Ensure the pipeline runs tests automatically on each commit.
+   - **(Optional):** Deploy the application to a cloud platform (Azure).
+3. **Caching and Queuing in Cloud (Optional)**
+   - Use a managed Redis or RabbitMQ instance in the cloud (e.g., Azure Redis Cache, AWS Elasticache for Redis, AWS SQS).
+   - **(Optional):** Automate the provisioning and configuration of these resources using infrastructure-as-code tools like Terraform or ARM templates.
 
-### `npm run eject`
+### **Bonus Features (Optional):**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **Optimized Database Access**: Use database indexing and query optimization for frequently accessed data.
+- **Asynchronous Processing**: Offload time-consuming tasks (e.g., sending notifications or generating reports) to background jobs using a task queue like Celery or Bull.js.
+- **Load Testing**: Implement load testing to evaluate the system’s ability to handle high traffic and performance bottlenecks.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# Database
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+CREATE TABLE users (
+id SERIAL PRIMARY KEY,
+username VARCHAR(100) UNIQUE NOT NULL,
+password VARCHAR(256) NOT NULL,
+role VARCHAR(50) NOT NULL, -- Enum: ['buyer', 'seller', 'approver']
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_users_username ON users(username)
+CREATE INDEX idx_users_password ON users(password)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+CREATE TABLE products (
+id SERIAL PRIMARY KEY,
+name VARCHAR(255) NOT NULL,
+description TEXT,
+price DECIMAL(10, 2) NOT NULL,
+seller_id INT REFERENCES users(id),
+status VARCHAR(50) DEFAULT 'pending', -- Enum: ['pending', 'approved', 'rejected']
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_products_id ON products(id); -- Optimize queries by id
+CREATE INDEX idx_products_status ON products(status); -- Speed up queries for product status (e.g., 'pending')
 
-## Learn More
+CREATE TABLE orders (
+id SERIAL PRIMARY KEY,
+buyer_id INT REFERENCES users(id),
+product_id INT REFERENCES products(id),
+seller_id INT REFERENCES users(id),
+status VARCHAR(50) DEFAULT 'pending', -- Enum: ['pending', 'approved']
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_orders_buyer_id ON orders(buyer_id);  
+CREATE INDEX idx_orders_seller_id ON orders(seller_id);
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Test logins
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Username password hash
+seller, test, $2b$05$ZKnDHSHKPRBQ3WVPvQPuQOH3CpF6VxWKO4Q8VzNefxFBPFwM51.Lm
+buyer, test,
+approver, test

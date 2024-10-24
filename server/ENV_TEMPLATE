@@ -1,0 +1,9 @@
+JWT_SECRET=
+PORT=4000
+PGUSER=
+PGHOST=
+PGDATABASE=
+PGPORT=5432
+PGPASSWORD=
+
+create .env file in root directory with above values
