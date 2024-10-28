@@ -57,7 +57,7 @@ module.exports.updateOrder = async function updateOrder(req, res) {
 module.exports.getOrdersByUser = async function getOrdersByUser(req, res) {
   try {
     const user = req.user;
-    if (!user || !user.role === "buyer") {
+    if (!user || user.role !== "buyer") {
       res.status(401).send("unauthorized");
       return;
     }
@@ -76,7 +76,7 @@ module.exports.getOrdersByUser = async function getOrdersByUser(req, res) {
 module.exports.getOrdersBySeller = async function getOrdersBySeller(req, res) {
   try {
     const user = req.user;
-    if (!user || !user.role === "seller") {
+    if (!user || user.role !== "seller") {
       res.status(401).send("unauthorized");
       return;
     }

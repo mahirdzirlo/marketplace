@@ -8,7 +8,7 @@ module.exports.createProduct = async function createProduct(req, res) {
 
     const { name, description, price } = req.body;
 
-    if (!user || !name || !description || !price || !user.role === "seller") {
+    if (!user || !name || !description || !price || user.role !== "seller") {
       console.log("missing params");
       res.status(400).send("bad input parameter");
       return;
@@ -28,7 +28,7 @@ module.exports.createProduct = async function createProduct(req, res) {
 module.exports.getProducts = async function getProducts(req, res) {
   try {
     const user = req.user;
-    if (!user || !user.role === "approver") {
+    if (!user || user.role !== "approver") {
       res.status(401).send("unauthorized");
       return;
     }
@@ -46,7 +46,7 @@ module.exports.getApprovedProducts = async function getApprovedProducts(
 ) {
   try {
     const user = req.user;
-    if (!user || !user.role === "buyer") {
+    if (!user || user.role !== "buyer") {
       res.status(401).send("unauthorized");
       return;
     }
@@ -67,7 +67,7 @@ module.exports.getProductsBySeller = async function getProductsBySeller(
 ) {
   try {
     const user = req.user;
-    if (!user || !user.role === "seller") {
+    if (!user || user.role !== "seller") {
       res.status(401).send("unauthorized");
       return;
     }
@@ -87,7 +87,7 @@ module.exports.updateProductByID = async function updateProductByID(req, res) {
   try {
     console.log("updateProduct req body", req.body);
     const user = req.user;
-    if (!user || !user.role === "seller") {
+    if (!user || user.role !== "seller") {
       res.status(401).send("unauthorized");
       return;
     }
@@ -138,7 +138,7 @@ module.exports.approveProduct = async function approveProduct(req, res) {
     console.log("approveProduct req body", req.body);
     const { id, status } = req.body;
     const user = req.user;
-    if (!user || !user.role === "approver") {
+    if (!user || user.role !== "approver") {
       res.status(401).send("unauthorized");
       return;
     }

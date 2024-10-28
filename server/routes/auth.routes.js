@@ -13,7 +13,6 @@ router.post("/login", async (req, res) => {
     ]);
 
     const user = result?.rows[0];
-    console.log("user", user);
 
     if (user && bcrypt.compareSync(password, user.password)) {
       const token = jwt.sign(

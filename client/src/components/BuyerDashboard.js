@@ -32,7 +32,6 @@ function BuyerDashboard() {
 
     try {
       const product = products.filter((product) => product.id === id);
-      console.log("product", user);
 
       const response = await api.post("/order", {
         buyer_id: user,
@@ -41,7 +40,7 @@ function BuyerDashboard() {
       });
       if (response.status === 200) {
         setMessage("Saved successfully");
-        fetchProducts();
+        fetchOrders();
       } else {
         setEditError("Failed to save");
       }
