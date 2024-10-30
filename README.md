@@ -6,7 +6,7 @@ npm install
 npm run build
 npm run start
 
-**Task: Develop a 2-way marketplace that allows sellers to put items and buyers to buy the items.**
+**Task: Develop a 2-way marketplace that allows sellers to put items and buyers to buy the items.** **Time limit 24 hours.**
 
 **Prerequisites:**
 
